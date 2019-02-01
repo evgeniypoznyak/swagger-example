@@ -1,0 +1,36 @@
+# Think about your API as separate app
+# Clear Idea
+# Don't confuse people
+# Be clear
+# Stay consistent (Pattern, structure)
+
+# Base URL, next is RESOURCE, next Version
+
+
+
+###  BASE ###
+# 1. Do not use www in base
+# 2. Keep your base URL simple
+# 3. Use subdomain
+
+
+### RESOURCE ###
+# 1. Use NOUNS to identify resources
+# 2. Plural is suggested:  /items /items/{id}  - go with plurals to your resources.
+# 3. Avoid deep nesting (Max is 3 levels)
+# 4. PUT - for entire update
+# 5. PATCH - for partial update
+
+### RESOURCE ###
+# 1. private - only in browser
+# 2. no-cache - nowhere (sensitive data should not be stored anywere)
+# 3. ETag - values some kind a hash
+            # API server compare ETag if not modified:
+                                          # 304 Not Modified
+                                      # if modified:
+                                          # new data with new ETag value & 200 Status.
+# 4.
+
+          
+
+

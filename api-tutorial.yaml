@@ -1,0 +1,35 @@
+swagger: "2.0"
+info:
+  title: My Website API
+  description: This is specifications for my portfolio website. To use these API for getting my profile data.
+  version: 1.0.0
+  contact:
+    name: Evgeniy Poznyak
+    url: "https://evgeniy.poznyaks.com"
+    email: evgeniy.poznyak@gmail.com
+host: data.eandkphoto.com
+basePath: /api/
+tags:
+  - name: "events"
+    description: "Everything about my events"
+    externalDocs:
+      description: "Find out more"
+      url: "https://data.eandkphoto.com/api/events"
+consumes:
+  - application/json # format of the responses to the client
+produces:
+  - application/json
+schemes:
+  - https
+paths:
+  /events:
+    get:
+      tags:
+        - "events"
+      summary: Return all event data.
+      description: Optional extended description in Markdown.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
