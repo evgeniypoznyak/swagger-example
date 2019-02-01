@@ -33,3 +33,5 @@ paths:
       responses:
         200:
           description: OK
+
+  #/events/2018/december/trinity-park-family-photoshoot:
