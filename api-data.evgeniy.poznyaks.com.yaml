@@ -26,7 +26,12 @@ produces:
   - application/json
 schemes:
   - https
+
+
 paths:
+#################
+##### SKILLS ####
+#################
   /skills:
     get:
       tags:
@@ -64,10 +69,77 @@ paths:
       responses:
         200:
           description: OK
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
         default:
           description: Something wrong happened
           schema:
             $ref: '#/definitions/GeneralError'
+  /skills/{id}:
+    patch:
+      tags:
+        - "skills"
+      summary: Updating existing skill
+      operationId: patchSkill
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: "Skill that need to be updated"
+          required: true
+          type: number
+        - in: body
+          name: skill
+          description: Updated Skill object with or without attachad projects
+          required: true
+          schema:
+            $ref: '#/definitions/OneSkillWithAttachedProjectsIds'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    delete:
+      tags:
+        - "skills"
+      summary: Deleting existing skill
+      operationId: deleteSkill
+      consumes:
+        - application/json
+      produces:
+        - application/javascript
+      parameters:
+        - name: id
+          in: path
+          description: Skill that need to be deleted
+          type: number
+          required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+
+#################
+#### PROJECTS ###
+#################
   /projects:
     get:
       tags:
@@ -97,7 +169,7 @@ paths:
       operationId: postProjects
       parameters:
         - in: body
-          name: body
+          name: project
           description: Store project
           required: true
           schema:
@@ -180,6 +252,27 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Projects'
+
+  # SkillWithProjects schema
+  OneSkillWithAttachedProjectsIds:
+    required:
+      - name
+      - description
+      - logo
+      - order
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      logo:
+        type: string
+      order:
+        type: number
+      projects:
+        type: array
+        items:
+          type: number
 
   Projects:
     type: array
