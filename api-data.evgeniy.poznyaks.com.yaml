@@ -15,7 +15,7 @@ tags:
     externalDocs:
       description: "Find out more"
       url: "https://evgeniy.poznyaks.com"
-  - name: "portfolio"
+  - name: "projects"
     description: "Everything about my works"
     externalDocs:
       description: "Find out more"
@@ -31,21 +31,244 @@ paths:
     get:
       tags:
         - "skills"
+      operationId: getAllSkills
       summary: Return all skills data.
       description: Optional extended description in Markdown.
       produces:
-          - application/json
+        - application/json
       responses:
-          200:
-            description: OK
-  /portfolio:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/SkillsWithProjects'
+        404:
+          description: When no skills was returned
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    post:
+      tags:
+        - "skills"
+      summary: Store skill into server
+      operationId: postSkill
+      parameters:
+        - in: body
+          name: body
+          description: Store skill
+          required: true
+          schema:
+            $ref: '#/definitions/OneSkillWithProjects'
+      responses:
+        200:
+          description: OK
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+  /projects:
     get:
       tags:
-        - "portfolio"
+        - "projects"
+      operationId: getProjects
       summary: Return all portfolio data.
       description: Optional extended description in Markdown.
       produces:
-          - application/json
+        - application/json
       responses:
-          200:
-            description: OK
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectsWithSkills'
+        404:
+          description: When no skills was returned
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    post:
+      tags:
+        - "projects"
+      summary: Store project into server
+      operationId: postProjects
+      parameters:
+        - in: body
+          name: body
+          description: Store project
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
+      responses:
+        200:
+          description: OK
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+
+##########################################################################
+####################### DEFINITIONS ######################################
+##########################################################################
+definitions:
+  # A general message schema in case of an error
+  GeneralError:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  # A Not found error that is sent back in case no results are found for the
+  # requested resource
+  NotFoundError:
+    required:
+      - message
+      - hint
+    properties:
+      message:
+        type: string
+      hint:
+        type: string
+
+  Skills:
+    type: array
+    items:
+      $ref: '#/definitions/Skill'
+
+  SkillsWithProjects:
+    type: array
+    items:
+      $ref: '#/definitions/OneSkillWithProjects'
+
+  # Skill schema
+  Skill:
+    required:
+      - name
+      - description
+      - logo
+      - order
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      logo:
+        type: string
+      order:
+        type: number
+
+  # SkillWithProjects schema
+  OneSkillWithProjects:
+    required:
+      - name
+      - description
+      - logo
+      - order
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      logo:
+        type: string
+      order:
+        type: number
+      projects:
+        type: array
+        items:
+          $ref: '#/definitions/Projects'
+
+  Projects:
+    type: array
+    items:
+      $ref: '#/definitions/Project'
+
+  ProjectsWithSkills:
+    type: array
+    items:
+      $ref: '#/definitions/OneProjectWithSkills'
+
+  # Project schema
+  Project:
+    required:
+      - name
+      - description
+      - proffetional
+      - logo
+      - order
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      description:
+        type: string
+      type:
+        type: number
+        enum:
+          - proffetional
+          - personal
+      logo:
+        type: string
+      order:
+        type: number
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+
+  # ProjectWithSkills schema
+  OneProjectWithSkills:
+    required:
+      - name
+      - description
+      - proffetional
+      - logo
+      - order
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+      description:
+        type: string
+      type:
+        type: number
+        enum:
+          - proffetional
+          - personal
+      logo:
+        type: string
+      order:
+        type: number
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      skills:
+        type: array
+        items:
+          $ref: '#/definitions/Skills'
+
+  # Images in project
+  Image:
+    required:
+      - url
+      - order
+    properties:
+      url:
+        type: string
+      order:
+        type: string
+
+##########################################################################
+####################### SECURITY DEFINITIONS #############################
+##########################################################################
+securityDefinitions:
+  KeySecurity:
+    type: apiKey
+    in: header
+    name: api_key
