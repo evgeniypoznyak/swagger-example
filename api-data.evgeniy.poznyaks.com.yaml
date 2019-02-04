@@ -29,9 +29,9 @@ schemes:
 
 
 paths:
-#################
-##### SKILLS ####
-#################
+  #################
+  ##### SKILLS ####
+  #################
   /skills:
     get:
       tags:
@@ -57,18 +57,48 @@ paths:
     post:
       tags:
         - "skills"
-      summary: Store skill into server
       operationId: postSkill
+      summary: Store skill into server
+      description: Storing skill
       parameters:
         - in: body
-          name: body
-          description: Store skill
+          name: skill
+          description: Store one skill object
           required: true
           schema:
             $ref: '#/definitions/OneSkillWithProjects'
       responses:
         200:
-          description: OK
+          description: Success
+        404:
+          description: Skill
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+  /skills/{id}:
+    get:
+      tags:
+        - "skills"
+      summary: Get one skill with assotiated projects
+      operationId: getSkill
+      parameters:
+        - name: id
+          in: path
+          description: Get one skill that need to be dislpayed
+          type: number
+          required: true
+        - in: body
+          name: skill
+          description: Skill object
+          required: true
+          schema:
+            $ref: '#/definitions/OneSkillWithProjects'
+      responses:
+        200:
+          description: Success
         404:
           description: No skill for provided skill id
           schema:
@@ -77,7 +107,6 @@ paths:
           description: Something wrong happened
           schema:
             $ref: '#/definitions/GeneralError'
-  /skills/{id}:
     patch:
       tags:
         - "skills"
@@ -98,7 +127,7 @@ paths:
           description: Updated Skill object with or without attachad projects
           required: true
           schema:
-            $ref: '#/definitions/OneSkillWithAttachedProjectsIds'
+            $ref: '#/definitions/OneSkillWithProjects'
       responses:
         200:
           description: Success
@@ -136,10 +165,9 @@ paths:
           description: Something wrong happened
           schema:
             $ref: '#/definitions/GeneralError'
-
-#################
-#### PROJECTS ###
-#################
+  #################
+  #### PROJECTS ###
+  #################
   /projects:
     get:
       tags:
@@ -181,6 +209,93 @@ paths:
           description: Something wrong happened
           schema:
             $ref: '#/definitions/GeneralError'
+  /projects/{id}:
+    get:
+      tags:
+        - "projects"
+      summary: Get one project with assotiated skills
+      operationId: getProject
+      parameters:
+        - name: id
+          in: path
+          description: Get one project that need to be dislpayed
+          type: number
+          required: true
+        - in: body
+          name: project
+          description: Project object
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    patch:
+      tags:
+        - "projects"
+      summary: Updating existing project
+      operationId: patchProject
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: "Project that need to be updated"
+          required: true
+          type: number
+        - in: body
+          name: project
+          description: Updated Project object with attachad skills
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project found for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    delete:
+      tags:
+        - "projects"
+      summary: Deleting existing project
+      operationId: deleteProject
+      consumes:
+        - application/json
+      produces:
+        - application/javascript
+      parameters:
+        - name: id
+          in: path
+          description: Project that need to be deleted
+          type: number
+          required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project found for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
 
 ##########################################################################
 ####################### DEFINITIONS ######################################
@@ -215,69 +330,51 @@ definitions:
     items:
       $ref: '#/definitions/OneSkillWithProjects'
 
-  # Skill schema
-  Skill:
-    required:
-      - name
-      - description
-      - logo
-      - order
-    properties:
-      name:
-        type: string
-      description:
-        type: string
-      logo:
-        type: string
-      order:
-        type: number
-
   # SkillWithProjects schema
   OneSkillWithProjects:
     required:
-      - name
-      - description
       - logo
+      - name
       - order
+      - urlTypeName
     properties:
-      name:
-        type: string
-      description:
-        type: string
       logo:
+        $ref: '#/definitions/Image'
+      name:
         type: string
       order:
         type: number
+      version:
+        type: string
+      urlTypeName:
+        type: string
+      description:
+        type: string
       projects:
         type: array
         items:
-          $ref: '#/definitions/Projects'
+          $ref: '#/definitions/Project'
 
-  # SkillWithProjects schema
-  OneSkillWithAttachedProjectsIds:
+  # Skill schema
+  Skill:
     required:
-      - name
-      - description
       - logo
+      - name
       - order
+      - urlTypeName
     properties:
-      name:
-        type: string
-      description:
-        type: string
       logo:
+        $ref: '#/definitions/Image'
+      name:
         type: string
       order:
         type: number
-      projects:
-        type: array
-        items:
-          type: number
-
-  Projects:
-    type: array
-    items:
-      $ref: '#/definitions/Project'
+      version:
+        type: string
+      urlTypeName:
+        type: string
+      description:
+        type: string
 
   ProjectsWithSkills:
     type: array
@@ -288,14 +385,19 @@ definitions:
   Project:
     required:
       - name
-      - description
-      - proffetional
-      - logo
+      - urlTypeName
+      - companyName
       - order
     properties:
       name:
         type: string
-      url:
+      urlTypeName:
+        type: string
+      companyName:
+        type: string
+      order:
+        type: number
+      projectExternalLink:
         type: string
       description:
         type: string
@@ -305,9 +407,7 @@ definitions:
           - proffetional
           - personal
       logo:
-        type: string
-      order:
-        type: number
+        $ref: '#/definitions/Image'
       images:
         type: array
         items:
@@ -317,14 +417,19 @@ definitions:
   OneProjectWithSkills:
     required:
       - name
-      - description
-      - proffetional
-      - logo
+      - urlTypeName
+      - companyName
       - order
     properties:
       name:
         type: string
-      url:
+      urlTypeName:
+        type: string
+      companyName:
+        type: string
+      order:
+        type: number
+      projectExternalLink:
         type: string
       description:
         type: string
@@ -334,9 +439,7 @@ definitions:
           - proffetional
           - personal
       logo:
-        type: string
-      order:
-        type: number
+        $ref: '#/definitions/Image'
       images:
         type: array
         items:
@@ -348,14 +451,13 @@ definitions:
 
   # Images in project
   Image:
-    required:
-      - url
-      - order
     properties:
-      url:
+      imageURL:
+        type: string
+      imageBase64:
         type: string
       order:
-        type: string
+        type: number
 
 ##########################################################################
 ####################### SECURITY DEFINITIONS #############################
