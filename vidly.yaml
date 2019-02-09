@@ -83,6 +83,13 @@ paths:
         - "genre"
       summary: Store new genre
       description: Optional extended description in Markdown.
+      parameters:
+        - in: body
+          name: genre
+          description: Store one genre object
+          required: true
+          schema:
+            $ref: '#/definitions/GenreWithMovies'
       consumes:
         - application/json
       produces:
@@ -103,24 +110,60 @@ paths:
           schema:
             $ref: '#/definitions/GeneralError'
 
-/genres/{id}
+  /genres/{id}:
+    get:
+      tags:
+        - "genre"
+      summary: Return one genre by id
+      description: Optional
+      parameters:
+        - name: id
+          in: path
+          description: Get one project by id
+          type: integer
+          required: true
+        - in: body
+          name: genre
+          description: Genre object
+          required: true
+          schema:
+            $ref: '#/definitions/GenreWithMovies'
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/GenreWithMovies'
+        404:
+          description: When no movies was returned
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
     put:
       tags:
         - "genre"
       summary: Return update genre with assotiated movies
+      description: All Mark down
       parameters:
         - name: id
           in: path
-      escription: Get one project that need to be dislpayed
-        type: number
-        required: true
-          - in: body
-            name: project
-            description: Project object
-            required: true
-            schema:
-              $ref: '#/definitions/OneProjectWithSkills'
-      description: Optional extended description in Markdown.
+          description: Update one project by id
+          type: integer
+          required: true
+        - in: body
+          name: genre
+          description: Genre object
+          required: true
+          schema:
+            $ref: '#/definitions/GenreWithMovies'
       consumes:
         - application/json
       produces:
@@ -143,7 +186,13 @@ paths:
     delete:
       tags:
         - "genre"
-      summary: Return all genres with assotiated movies
+      parameters:
+        - name: id
+          in: path
+          description: Delete one project by id
+          type: integer
+          required: true
+      summary: Delete one genre by id
       description: Optional extended description in Markdown.
       consumes:
         - application/json
@@ -151,13 +200,9 @@ paths:
         - application/json
       responses:
         200:
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/GenreWithMovies'
+          description: Success
         404:
-          description: When no movies was returned
+          description: When no genre was found by provided id
           schema:
             $ref: '#/definitions/NotFoundError'
         default:
@@ -210,6 +255,11 @@ definitions:
     required:
       - id
       - name
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
 
   GenreWithMovies:
     required:
