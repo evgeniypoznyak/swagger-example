@@ -43,7 +43,9 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/SkillsWithProjects'
+            type: array
+            items:
+              $ref: '#/definitions/Skill'
         404:
           description: When no skills was returned
           schema:
@@ -68,6 +70,8 @@ paths:
       responses:
         201:
           description: Created
+          schema:
+            $ref: '#/definitions/Skill'
         404:
           description: Skill not found
           schema:
@@ -88,15 +92,17 @@ paths:
           description: Get one skill that need to be dislpayed
           type: number
           required: true
-        - in: body
-          name: skill
-          description: Skill object
-          required: true
-          schema:
-            $ref: '#/definitions/SkillWithProjects'
+#        - in: body
+#          name: skill
+#          description: Skill object
+#          required: true
+#          schema:
+#            $ref: '#/definitions/SkillWithProjects'
       responses:
         200:
           description: Success
+          schema:
+            $ref: '#/definitions/Skill'
         404:
           description: No skill for provided skill id
           schema:
@@ -125,10 +131,12 @@ paths:
           description: Updated Skill object with or without attachad projects
           required: true
           schema:
-            $ref: '#/definitions/SkillWithProjects'
+            $ref: '#/definitions/Skill'
       responses:
         200:
           description: Updated
+          schema:
+            $ref: '#/definitions/Skill'
         404:
           description: No skill for provided skill id
           schema:
@@ -179,7 +187,9 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/Projects'
+            type: array
+            items:
+              $ref: '#/definitions/Project'
         404:
           description: When no skills was returned
           schema:
@@ -199,10 +209,14 @@ paths:
           description: Store project
           required: true
           schema:
-            $ref: '#/definitions/ProjectWithSkills'
+            $ref: '#/definitions/Project'
       responses:
         201:
           description: Created
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Project'
         default:
           description: Something wrong happened
           schema:
@@ -224,7 +238,7 @@ paths:
           description: Project object
           required: true
           schema:
-            $ref: '#/definitions/ProjectWithSkills'
+            $ref: '#/definitions/Project'
       responses:
         200:
           description: Success
@@ -256,7 +270,7 @@ paths:
           description: Updated Project object with attachad skills
           required: true
           schema:
-            $ref: '#/definitions/ProjectWithSkills'
+            $ref: '#/definitions/Project'
       responses:
         200:
           description: Success
@@ -318,16 +332,6 @@ definitions:
       hint:
         type: string
 
-  Skills:
-    type: array
-    items:
-      $ref: '#/definitions/Skill'
-
-  SkillsWithProjects:
-    type: array
-    items:
-      $ref: '#/definitions/SkillWithProjects'
-
   # Skill schema
   Skill:
     required:
@@ -351,31 +355,10 @@ definitions:
         type: string
       description:
         type: string
-
-  # SkillWithProjects schema
-  SkillWithProjects:
-    allOf:
-      - $ref: '#/definitions/Skill'
-    properties:
       projects:
         type: array
         items:
           $ref: '#/definitions/Project'
-
-  Projects:
-    type: array
-    items:
-      $ref: '#/definitions/ProjectWithSkills'
-
-  # ProjectWithSkills schema
-  ProjectWithSkills:
-    allOf:
-      - $ref: '#/definitions/Project'
-    properties:
-      skills:
-        type: array
-        items:
-          $ref: '#/definitions/Skill'
 
   # Project schema
   Project:
@@ -411,6 +394,10 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/Image'
+      skills:
+        type: array
+        items:
+          $ref: '#/definitions/Skill'
 
   # Images in project
   Image:
