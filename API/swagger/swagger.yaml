@@ -1,26 +1,432 @@
 swagger: "2.0"
 info:
-  title: Sample API
+  title: Portfolio Website API
   description: API description in Markdown.
   version: 1.0.0
-host: api.example.com
+  contact:
+    name: Evgeniy Poznyak
+    url: "https://evgeniy.poznyaks.com"
+    email: evgeniy.poznyak@gmail.com
+host: api.evgeniy.poznyaks.com
+tags:
+  - name: "skills"
+    description: "Everything about my skills"
+    externalDocs:
+      description: "Find out more"
+      url: "https://evgeniy.poznyaks.com"
+  - name: "projects"
+    description: "Everything about my works"
+    externalDocs:
+      description: "Find out more"
+      url: "https://evgeniy.poznyaks.com"
+consumes:
+  - application/json # format of the responses to the client
+produces:
+  - application/json
 schemes:
   - https
+
 paths:
+  #################
+  ##### SKILLS ####
+  #################
   /skills:
     get:
-      summary: Returns a list of users.
+      tags:
+        - "skills"
+      operationId: Find
+      summary: Return all skills data.
       description: Optional extended description in Markdown.
       produces:
         - application/json
       responses:
         200:
           description: OK
+          schema:
+            $ref: '#/definitions/SkillsWithProjects'
+        404:
+          description: When no skills was returned
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
     post:
-      summary: Save one skill
+      tags:
+        - "skills"
+      operationId: Save
+      summary: Store skill into server
+      description: Storing skill
+      parameters:
+        - in: body
+          name: skill
+          description: Store one skill object
+          required: true
+          schema:
+            $ref: '#/definitions/Skill'
+      responses:
+        201:
+          description: Created
+        404:
+          description: Skill not found
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+  /skills/{id}:
+    get:
+      tags:
+        - "skills"
+      summary: Get one skill with assotiated projects
+      operationId: Find
+      parameters:
+        - name: id
+          in: path
+          description: Get one skill that need to be dislpayed
+          type: number
+          required: true
+        - in: body
+          name: skill
+          description: Skill object
+          required: true
+          schema:
+            $ref: '#/definitions/SkillWithProjects'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    patch:
+      tags:
+        - "skills"
+      summary: Updating existing skill
+      operationId: Update
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: "Skill that need to be updated"
+          required: true
+          type: number
+        - in: body
+          name: skill
+          description: Updated Skill object with or without attachad projects
+          required: true
+          schema:
+            $ref: '#/definitions/SkillWithProjects'
+      responses:
+        200:
+          description: Updated
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    delete:
+      tags:
+        - "skills"
+      summary: Deleting existing skill
+      operationId: Delete
+      consumes:
+        - application/json
+      produces:
+        - application/javascript
+      parameters:
+        - name: id
+          in: path
+          description: Skill that need to be deleted
+          type: number
+          required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: No skill for provided skill id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+  #################
+  #### PROJECTS ###
+  #################
+  /projects:
+    get:
+      tags:
+        - "projects"
+      operationId: Find
+      summary: Return all portfolio data.
+      description: Optional extended description in Markdown.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectsWithSkills'
+        404:
+          description: When no skills was returned
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    post:
+      tags:
+        - "projects"
+      summary: Store project into server
       operationId: Save
       parameters:
-        -
+        - in: body
+          name: project
+          description: Store project
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
       responses:
+        201:
+          description: Created
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+  /projects/{id}:
+    get:
+      tags:
+        - "projects"
+      summary: Find one project with assotiated skills
+      operationId: Find
+      parameters:
+        - name: id
+          in: path
+          description: Get one project that need to be dislpayed
+          type: number
+          required: true
+        - in: body
+          name: project
+          description: Project object
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    patch:
+      tags:
+        - "projects"
+      summary: Updating existing project
+      operationId: Update
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: "Project that need to be updated"
+          required: true
+          type: number
+        - in: body
+          name: project
+          description: Updated Project object with attachad skills
+          required: true
+          schema:
+            $ref: '#/definitions/OneProjectWithSkills'
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project found for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
+    delete:
+      tags:
+        - "projects"
+      summary: Deleting existing project
+      operationId: Delete
+      consumes:
+        - application/json
+      produces:
+        - application/javascript
+      parameters:
+        - name: id
+          in: path
+          description: Project that need to be deleted
+          type: number
+          required: true
+      responses:
+        200:
+          description: Success
+        404:
+          description: No project found for provided project id
+          schema:
+            $ref: '#/definitions/NotFoundError'
+        default:
+          description: Something wrong happened
+          schema:
+            $ref: '#/definitions/GeneralError'
 
-  /skills/{id}:
+##########################################################################
+####################### DEFINITIONS ######################################
+##########################################################################
+definitions:
+  # A general message schema in case of an error
+  GeneralError:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  # A Not found error that is sent back in case no results are found for the
+  # requested resource
+  NotFoundError:
+    required:
+      - message
+      - hint
+    properties:
+      message:
+        type: string
+      hint:
+        type: string
+
+  Skills:
+    type: array
+    items:
+      $ref: '#/definitions/Skill'
+
+  SkillsWithProjects:
+    type: array
+    items:
+      $ref: '#/definitions/SkillWithProjects'
+
+  # Skill schema
+  Skill:
+    required:
+      - id
+      - slug
+      - name
+      - logo
+      - order
+    properties:
+      id:
+        type: string
+      slug:
+        type: string
+      name:
+        type: string
+      logo:
+        $ref: '#/definitions/Image'
+      order:
+        type: number
+      version:
+        type: string
+      description:
+        type: string
+
+  # SkillWithProjects schema
+  SkillWithProjects:
+    allOf:
+      - $ref: '#/definitions/Skill'
+    properties:
+      projects:
+        type: array
+        items:
+          $ref: '#/definitions/Project'
+
+  ProjectsWithSkills:
+    type: array
+    items:
+      $ref: '#/definitions/OneProjectWithSkills'
+
+  # ProjectWithSkills schema
+  OneProjectWithSkills:
+    allOf:
+      - $ref: '#/definitions/Project'
+    properties:
+      skills:
+        type: array
+        items:
+          $ref: '#/definitions/Skills'
+
+  # Project schema
+  Project:
+    required:
+      - id
+      - name
+      - slug
+      - companyName
+      - order
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      companyName:
+        type: string
+      order:
+        type: number
+      projectExternalLink:
+        type: string
+      description:
+        type: string
+      type:
+        type: number
+        enum:
+          - proffetional
+          - personal
+      logo:
+        $ref: '#/definitions/Image'
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+
+  # Images in project
+  Image:
+    properties:
+      imageURL:
+        type: string
+      imageBase64:
+        type: string
+      order:
+        type: number
+
+##########################################################################
+####################### SECURITY DEFINITIONS #############################
+##########################################################################
+securityDefinitions:
+  KeySecurity:
+    type: apiKey
+    in: header
+    name: api_key
