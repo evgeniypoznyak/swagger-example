@@ -179,7 +179,7 @@ paths:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/ProjectsWithSkills'
+            $ref: '#/definitions/Projects'
         404:
           description: When no skills was returned
           schema:
@@ -199,7 +199,7 @@ paths:
           description: Store project
           required: true
           schema:
-            $ref: '#/definitions/OneProjectWithSkills'
+            $ref: '#/definitions/ProjectWithSkills'
       responses:
         201:
           description: Created
@@ -224,7 +224,7 @@ paths:
           description: Project object
           required: true
           schema:
-            $ref: '#/definitions/OneProjectWithSkills'
+            $ref: '#/definitions/ProjectWithSkills'
       responses:
         200:
           description: Success
@@ -256,7 +256,7 @@ paths:
           description: Updated Project object with attachad skills
           required: true
           schema:
-            $ref: '#/definitions/OneProjectWithSkills'
+            $ref: '#/definitions/ProjectWithSkills'
       responses:
         200:
           description: Success
@@ -362,20 +362,20 @@ definitions:
         items:
           $ref: '#/definitions/Project'
 
-  ProjectsWithSkills:
+  Projects:
     type: array
     items:
-      $ref: '#/definitions/OneProjectWithSkills'
+      $ref: '#/definitions/ProjectWithSkills'
 
   # ProjectWithSkills schema
-  OneProjectWithSkills:
+  ProjectWithSkills:
     allOf:
       - $ref: '#/definitions/Project'
     properties:
       skills:
         type: array
         items:
-          $ref: '#/definitions/Skills'
+          $ref: '#/definitions/Skill'
 
   # Project schema
   Project:
