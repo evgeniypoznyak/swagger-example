@@ -1,14 +1,13 @@
 swagger: "2.0"
 info:
-  title: Evgeniy Poznyak Portfolio Website API
+  title: Portfolio Website API
   description: API description in Markdown.
   version: 1.0.0
   contact:
     name: Evgeniy Poznyak
     url: "https://evgeniy.poznyaks.com"
     email: evgeniy.poznyak@gmail.com
-host: data.evgeniy.poznyaks.com
-basePath: /api/
+host: api.evgeniy.poznyaks.com
 tags:
   - name: "skills"
     description: "Everything about my skills"
@@ -36,7 +35,7 @@ paths:
     get:
       tags:
         - "skills"
-      operationId: getAllSkills
+      operationId: Find
       summary: Return all skills data.
       description: Optional extended description in Markdown.
       produces:
@@ -57,7 +56,7 @@ paths:
     post:
       tags:
         - "skills"
-      operationId: postSkill
+      operationId: Save
       summary: Store skill into server
       description: Storing skill
       parameters:
@@ -66,12 +65,12 @@ paths:
           description: Store one skill object
           required: true
           schema:
-            $ref: '#/definitions/OneSkillWithProjects'
+            $ref: '#/definitions/Skill'
       responses:
-        200:
-          description: Success
+        201:
+          description: Created
         404:
-          description: Skill
+          description: Skill not found
           schema:
             $ref: '#/definitions/NotFoundError'
         default:
@@ -83,7 +82,7 @@ paths:
       tags:
         - "skills"
       summary: Get one skill with assotiated projects
-      operationId: getSkill
+      operationId: Find
       parameters:
         - name: id
           in: path
@@ -95,7 +94,7 @@ paths:
           description: Skill object
           required: true
           schema:
-            $ref: '#/definitions/OneSkillWithProjects'
+            $ref: '#/definitions/SkillWithProjects'
       responses:
         200:
           description: Success
@@ -111,7 +110,7 @@ paths:
       tags:
         - "skills"
       summary: Updating existing skill
-      operationId: patchSkill
+      operationId: Update
       consumes:
         - application/json
       produces:
@@ -127,10 +126,10 @@ paths:
           description: Updated Skill object with or without attachad projects
           required: true
           schema:
-            $ref: '#/definitions/OneSkillWithProjects'
+            $ref: '#/definitions/SkillWithProjects'
       responses:
         200:
-          description: Success
+          description: Updated
         404:
           description: No skill for provided skill id
           schema:
@@ -143,7 +142,7 @@ paths:
       tags:
         - "skills"
       summary: Deleting existing skill
-      operationId: deleteSkill
+      operationId: Delete
       consumes:
         - application/json
       produces:
@@ -172,7 +171,7 @@ paths:
     get:
       tags:
         - "projects"
-      operationId: getProjects
+      operationId: Find
       summary: Return all portfolio data.
       description: Optional extended description in Markdown.
       produces:
@@ -194,7 +193,7 @@ paths:
       tags:
         - "projects"
       summary: Store project into server
-      operationId: postProjects
+      operationId: Save
       parameters:
         - in: body
           name: project
@@ -203,8 +202,8 @@ paths:
           schema:
             $ref: '#/definitions/OneProjectWithSkills'
       responses:
-        200:
-          description: OK
+        201:
+          description: Created
         default:
           description: Something wrong happened
           schema:
@@ -213,8 +212,8 @@ paths:
     get:
       tags:
         - "projects"
-      summary: Get one project with assotiated skills
-      operationId: getProject
+      summary: Find one project with assotiated skills
+      operationId: Find
       parameters:
         - name: id
           in: path
@@ -242,7 +241,7 @@ paths:
       tags:
         - "projects"
       summary: Updating existing project
-      operationId: patchProject
+      operationId: Update
       consumes:
         - application/json
       produces:
@@ -274,7 +273,7 @@ paths:
       tags:
         - "projects"
       summary: Deleting existing project
-      operationId: deleteProject
+      operationId: Delete
       consumes:
         - application/json
       produces:
@@ -328,126 +327,91 @@ definitions:
   SkillsWithProjects:
     type: array
     items:
-      $ref: '#/definitions/OneSkillWithProjects'
-
-  # SkillWithProjects schema
-  OneSkillWithProjects:
-    required:
-      - logo
-      - name
-      - order
-      - urlTypeName
-    properties:
-      logo:
-        $ref: '#/definitions/Image'
-      name:
-        type: string
-      order:
-        type: number
-      version:
-        type: string
-      urlTypeName:
-        type: string
-      description:
-        type: string
-      projects:
-        type: array
-        items:
-          $ref: '#/definitions/Project'
+      $ref: '#/definitions/SkillWithProjects'
 
   # Skill schema
   Skill:
     required:
-      - logo
+      - id
+      - slug
       - name
+      - logo
       - order
-      - urlTypeName
     properties:
-      logo:
-        $ref: '#/definitions/Image'
+      id:
+        type: string
+      slug:
+        type: string
       name:
         type: string
+      logo:
+        $ref: '#/definitions/Image'
       order:
         type: number
       version:
         type: string
-      urlTypeName:
-        type: string
       description:
         type: string
+
+  # SkillWithProjects schema
+  SkillWithProjects:
+    allOf:
+      - $ref: '#/definitions/Skill'
+    properties:
+      projects:
+        type: array
+        items:
+          $ref: '#/definitions/Project'
 
   ProjectsWithSkills:
     type: array
     items:
       $ref: '#/definitions/OneProjectWithSkills'
 
-  # Project schema
-  Project:
-    required:
-      - name
-      - urlTypeName
-      - companyName
-      - order
-    properties:
-      name:
-        type: string
-      urlTypeName:
-        type: string
-      companyName:
-        type: string
-      order:
-        type: number
-      projectExternalLink:
-        type: string
-      description:
-        type: string
-      type:
-        type: number
-        enum:
-          - proffetional
-          - personal
-      logo:
-        $ref: '#/definitions/Image'
-      images:
-        type: array
-        items:
-          $ref: '#/definitions/Image'
-
   # ProjectWithSkills schema
   OneProjectWithSkills:
-    required:
-      - name
-      - urlTypeName
-      - companyName
-      - order
+    allOf:
+      - $ref: '#/definitions/Project'
     properties:
-      name:
-        type: string
-      urlTypeName:
-        type: string
-      companyName:
-        type: string
-      order:
-        type: number
-      projectExternalLink:
-        type: string
-      description:
-        type: string
-      type:
-        type: number
-        enum:
-          - proffetional
-          - personal
-      logo:
-        $ref: '#/definitions/Image'
-      images:
-        type: array
-        items:
-          $ref: '#/definitions/Image'
       skills:
         type: array
         items:
           $ref: '#/definitions/Skills'
+
+  # Project schema
+  Project:
+    required:
+      - id
+      - name
+      - slug
+      - companyName
+      - order
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      slug:
+        type: string
+      companyName:
+        type: string
+      order:
+        type: number
+      projectExternalLink:
+        type: string
+      description:
+        type: string
+      type:
+        type: number
+        enum:
+          - proffetional
+          - personal
+      logo:
+        $ref: '#/definitions/Image'
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
 
   # Images in project
   Image:
